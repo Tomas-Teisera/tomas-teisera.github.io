@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portfolio de análisis de datos | Tomás Teisera</title>
+<style>
+:root { --bg:#ffffff; --fg:#1e293b; --muted:#64748b; --line:#e2e8f0; --panel:#f8fafc; --acc:#2563eb; --bar-muted:#cbd5e1; --ref:#64748b; --dark:#1a1a2e; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--fg); }
+body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 15px; line-height: 1.5; padding: 24px max(16px, env(safe-area-inset-right, 0px)) 32px max(16px, env(safe-area-inset-left, 0px)); }
+.pf { max-width: 62rem; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+h1 { font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 700; color: var(--dark); margin: 0 0 4px; line-height: 1.2; text-wrap: balance; }
+h2 { font-size: 1.05rem; font-weight: 600; color: var(--dark); margin: 0; }
+p { margin: 0; }
+.sub { color: var(--muted); }
+.notice { border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; color: var(--muted); background: var(--panel); }
+.take { max-width: 46rem; }
+.take b, .note b { font-weight: 600; font-variant-numeric: tabular-nums; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 18px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.note { color: var(--muted); font-size: 0.85rem; max-width: 46rem; }
+.legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.85rem; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; flex: none; }
+.chart { position: relative; width: 100%; }
+#c-lotes { min-height: 520px; } #c-bench { min-height: 300px; } #c-funnel { min-height: 280px; }
+svg { display: block; overflow: visible; }
+svg text { font-family: inherit; font-size: 12px; fill: var(--muted); font-variant-numeric: tabular-nums; }
+svg text.strong { fill: var(--fg); font-weight: 600; }
+.tip { position: absolute; z-index: 5; pointer-events: none; background: #fff; border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 4px 14px rgba(15,23,42,.12); padding: 6px 10px; font-size: 12px; display: flex; flex-direction: column; gap: 2px; white-space: nowrap; }
+.tip > div { display: flex; align-items: center; gap: 6px; }
+.tip-h { color: var(--muted); }
+[hidden] { display: none !important; }
+footer { font-size: 0.85rem; color: var(--muted); max-width: 46rem; }
+footer a { color: var(--acc); }
+</style>
+</head>
+<body>
+<div class="pf">
+  <header>
+    <h1>Portfolio de análisis de datos</h1>
+    <p class="sub">Tomás Teisera · Analista de Marketing · análisis inmobiliario con Google Sheets, Excel y HubSpot</p>
+  </header>
+
+  <p class="notice">Los datos de esta página son simulados y los armé como ejercicio. No pertenecen a ninguna empresa ni a ningún proyecto real. Reproducen la forma de análisis que hago en el sector inmobiliario: factibilidad de lotes, benchmarking de precios y embudo de ventas.</p>
+
+  <p class="take">En este ejercicio se evaluaron <b id="t-eval">—</b> lotes. <b id="t-desc">—</b> se descartaron y <b id="t-av">—</b> pasaron a la siguiente etapa. Debajo se ve cómo se decide, cómo se compara el precio con la competencia y dónde se pierde o se gana conversión.</p>
+
+  <section class="card">
+    <h2>1. Factibilidad de lotes</h2>
+    <p class="note">Margen por lote = (precio de venta proyectado − costo) / precio de venta, por m² vendible. La línea punteada es el umbral de ejemplo de <b id="umbral">—</b>. Un lote puede descartarse aunque supere el umbral, por competencia directa o por el costo del terreno. Los lotes que avanzaron tienen un margen promedio de <b id="k-mar">—</b>.</p>
+    <div class="legend"><span><i class="sw" style="background:var(--acc)"></i>Avanzó</span><span><i class="sw" style="background:var(--bar-muted)"></i>Descartado</span></div>
+    <div class="chart" id="c-lotes"></div>
+  </section>
+
+  <section class="card">
+    <h2>2. Benchmarking de precios por m²</h2>
+    <p class="note">Precio de oferta por m² en USD, mes a mes, del proyecto propio simulado contra cuatro competidores simulados de la misma zona. La base se actualiza una vez por mes y se revisa cada semana según ventas y disponibilidad de unidades. Pasá el cursor para ver el valor de cada mes.</p>
+    <div class="chart" id="c-bench"></div>
+  </section>
+
+  <section class="card">
+    <h2>3. Embudo de ventas, año contra año</h2>
+    <p class="note">Cada etapa compara el año actual con el anterior. Las visitas variaron <b id="f-vis">—</b> y las consultas <b id="f-con">—</b>: crecieron más las visitas que las consultas, es decir que mejoró la conversión de consulta a visita.</p>
+    <div class="legend"><span><i class="sw" style="background:var(--acc)"></i>Año actual</span><span><i class="sw" style="background:var(--bar-muted)"></i>Año anterior</span></div>
+    <div class="chart" id="c-funnel"></div>
+  </section>
+
+  <footer>Herramientas que uso en mi trabajo: Excel, Google Sheets, HubSpot y EnvíaloSimple. Este tablero es un ejercicio de práctica hecho solo con datos ficticios. <a href="https://linkedin.com/in/tom%C3%A1s-teisera" target="_blank" rel="noopener">LinkedIn</a></footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script>
+(function () {
+  var LOTES = [{"lote":"Lote 01","barrio":"Coghlan","usd_m2_venta":2620,"usd_m2_costo":2330,"margen_pct":11.1,"decision":"Descartado","motivo":"Margen bajo"},{"lote":"Lote 02","barrio":"Villa Devoto","usd_m2_venta":2830,"usd_m2_costo":2560,"margen_pct":9.5,"decision":"Descartado","motivo":"Margen bajo"},{"lote":"Lote 03","barrio":"Belgrano","usd_m2_venta":3550,"usd_m2_costo":2390,"margen_pct":32.7,"decision":"Avanzó","motivo":"—"},{"lote":"Lote 04","barrio":"Villa Pueyrredón","usd_m2_venta":2200,"usd_m2_costo":1790,"margen_pct":18.6,"decision":"Descartado","motivo":"Margen bajo"},{"lote":"Lote 05","barrio":"Almagro","usd_m2_venta":2390,"usd_m2_costo":1980,"margen_pct":17.2,"decision":"Descartado","motivo":"Margen bajo"},{"lote":"Lote 06","barrio":"Colegiales","usd_m2_venta":2970,"usd_m2_costo":2680,"margen_pct":9.8,"decision":"Descartado","motivo":"Margen bajo"},{"lote":"Lote 07","barrio":"Palermo","usd_m2_venta":3600,"usd_m2_costo":2690,"margen_pct":25.3,"decision":"Descartado","motivo":"Competencia directa fuerte"},{"lote":"Lote 08","barrio":"Villa Crespo","usd_m2_venta":3080,"usd_m2_costo":2430,"margen_pct":21.1,"decision":"Descartado","motivo":"Margen bajo"},{"lote":"Lote 09","barrio":"Villa Urquiza","usd_m2_venta":2750,"usd_m2_costo":1910,"margen_pct":30.5,"decision":"Avanzó","motivo":"—"},{"lote":"Lote 10","barrio":"Chacarita","usd_m2_venta":2860,"usd_m2_costo":2600,"margen_pct":9.1,"decision":"Descartado","motivo":"Margen bajo"},{"lote":"Lote 11","barrio":"Parque Chas","usd_m2_venta":2340,"usd_m2_costo":1880,"margen_pct":19.7,"decision":"Descartado","motivo":"Margen bajo"},{"lote":"Lote 12","barrio":"Saavedra","usd_m2_venta":2510,"usd_m2_costo":2090,"margen_pct":16.7,"decision":"Descartado","motivo":"Margen bajo"},{"lote":"Lote 13","barrio":"Caballito","usd_m2_venta":2690,"usd_m2_costo":2150,"margen_pct":20.1,"decision":"Descartado","motivo":"Margen bajo"},{"lote":"Lote 14","barrio":"Núñez","usd_m2_venta":3360,"usd_m2_costo":2190,"margen_pct":34.8,"decision":"Avanzó","motivo":"—"},{"lote":"Lote 15","barrio":"Coghlan","usd_m2_venta":2550,"usd_m2_costo":2040,"margen_pct":20.0,"decision":"Descartado","motivo":"Margen bajo"},{"lote":"Lote 16","barrio":"Villa Devoto","usd_m2_venta":2670,"usd_m2_costo":2400,"margen_pct":10.1,"decision":"Descartado","motivo":"Margen bajo"},{"lote":"Lote 17","barrio":"Belgrano","usd_m2_venta":3620,"usd_m2_costo":2900,"margen_pct":19.9,"decision":"Descartado","motivo":"Margen bajo"},{"lote":"Lote 18","barrio":"Villa Pueyrredón","usd_m2_venta":2360,"usd_m2_costo":1930,"margen_pct":18.2,"decision":"Descartado","motivo":"Margen bajo"},{"lote":"Lote 19","barrio":"Almagro","usd_m2_venta":2530,"usd_m2_costo":1630,"margen_pct":35.6,"decision":"Avanzó","motivo":"—"},{"lote":"Lote 20","barrio":"Colegiales","usd_m2_venta":3120,"usd_m2_costo":2270,"margen_pct":27.2,"decision":"Descartado","motivo":"Costo del terreno"},{"lote":"Lote 21","barrio":"Palermo","usd_m2_venta":3550,"usd_m2_costo":2670,"margen_pct":24.8,"decision":"Descartado","motivo":"Margen bajo"},{"lote":"Lote 22","barrio":"Villa Crespo","usd_m2_venta":3000,"usd_m2_costo":2610,"margen_pct":13.0,"decision":"Descartado","motivo":"Margen bajo"}];
+  var BENCH = [{"mes":"2025-11","proyecto":"Proyecto propio (simulado)","usd_m2":2650},{"mes":"2025-12","proyecto":"Proyecto propio (simulado)","usd_m2":2670},{"mes":"2026-01","proyecto":"Proyecto propio (simulado)","usd_m2":2690},{"mes":"2026-02","proyecto":"Proyecto propio (simulado)","usd_m2":2710},{"mes":"2026-03","proyecto":"Proyecto propio (simulado)","usd_m2":2710},{"mes":"2026-04","proyecto":"Proyecto propio (simulado)","usd_m2":2750},{"mes":"2026-05","proyecto":"Proyecto propio (simulado)","usd_m2":2730},{"mes":"2026-06","proyecto":"Proyecto propio (simulado)","usd_m2":2760},{"mes":"2026-07","proyecto":"Proyecto propio (simulado)","usd_m2":2790},{"mes":"2026-08","proyecto":"Proyecto propio (simulado)","usd_m2":2780},{"mes":"2026-09","proyecto":"Proyecto propio (simulado)","usd_m2":2810},{"mes":"2026-10","proyecto":"Proyecto propio (simulado)","usd_m2":2810},{"mes":"2025-11","proyecto":"Competidor A","usd_m2":2910},{"mes":"2025-12","proyecto":"Competidor A","usd_m2":2920},{"mes":"2026-01","proyecto":"Competidor A","usd_m2":2920},{"mes":"2026-02","proyecto":"Competidor A","usd_m2":2940},{"mes":"2026-03","proyecto":"Competidor A","usd_m2":2930},{"mes":"2026-04","proyecto":"Competidor A","usd_m2":2950},{"mes":"2026-05","proyecto":"Competidor A","usd_m2":2960},{"mes":"2026-06","proyecto":"Competidor A","usd_m2":2960},{"mes":"2026-07","proyecto":"Competidor A","usd_m2":2970},{"mes":"2026-08","proyecto":"Competidor A","usd_m2":2990},{"mes":"2026-09","proyecto":"Competidor A","usd_m2":3000},{"mes":"2026-10","proyecto":"Competidor A","usd_m2":3000},{"mes":"2025-11","proyecto":"Competidor B","usd_m2":2500},{"mes":"2025-12","proyecto":"Competidor B","usd_m2":2510},{"mes":"2026-01","proyecto":"Competidor B","usd_m2":2550},{"mes":"2026-02","proyecto":"Competidor B","usd_m2":2570},{"mes":"2026-03","proyecto":"Competidor B","usd_m2":2600},{"mes":"2026-04","proyecto":"Competidor B","usd_m2":2610},{"mes":"2026-05","proyecto":"Competidor B","usd_m2":2620},{"mes":"2026-06","proyecto":"Competidor B","usd_m2":2640},{"mes":"2026-07","proyecto":"Competidor B","usd_m2":2670},{"mes":"2026-08","proyecto":"Competidor B","usd_m2":2670},{"mes":"2026-09","proyecto":"Competidor B","usd_m2":2710},{"mes":"2026-10","proyecto":"Competidor B","usd_m2":2720},{"mes":"2025-11","proyecto":"Competidor C","usd_m2":3090},{"mes":"2025-12","proyecto":"Competidor C","usd_m2":3090},{"mes":"2026-01","proyecto":"Competidor C","usd_m2":3120},{"mes":"2026-02","proyecto":"Competidor C","usd_m2":3100},{"mes":"2026-03","proyecto":"Competidor C","usd_m2":3120},{"mes":"2026-04","proyecto":"Competidor C","usd_m2":3130},{"mes":"2026-05","proyecto":"Competidor C","usd_m2":3150},{"mes":"2026-06","proyecto":"Competidor C","usd_m2":3130},{"mes":"2026-07","proyecto":"Competidor C","usd_m2":3150},{"mes":"2026-08","proyecto":"Competidor C","usd_m2":3160},{"mes":"2026-09","proyecto":"Competidor C","usd_m2":3180},{"mes":"2026-10","proyecto":"Competidor C","usd_m2":3180},{"mes":"2025-11","proyecto":"Competidor D","usd_m2":2310},{"mes":"2025-12","proyecto":"Competidor D","usd_m2":2310},{"mes":"2026-01","proyecto":"Competidor D","usd_m2":2320},{"mes":"2026-02","proyecto":"Competidor D","usd_m2":2330},{"mes":"2026-03","proyecto":"Competidor D","usd_m2":2360},{"mes":"2026-04","proyecto":"Competidor D","usd_m2":2370},{"mes":"2026-05","proyecto":"Competidor D","usd_m2":2360},{"mes":"2026-06","proyecto":"Competidor D","usd_m2":2370},{"mes":"2026-07","proyecto":"Competidor D","usd_m2":2390},{"mes":"2026-08","proyecto":"Competidor D","usd_m2":2400},{"mes":"2026-09","proyecto":"Competidor D","usd_m2":2420},{"mes":"2026-10","proyecto":"Competidor D","usd_m2":2430}];
+  var EMB = [{"etapa":"Consultas","orden":1,"anio_anterior":1180,"anio_actual":1240},{"etapa":"Visitas","orden":2,"anio_anterior":295,"anio_actual":372},{"etapa":"Reservas","orden":3,"anio_anterior":59,"anio_actual":78},{"etapa":"Ventas","orden":4,"anio_anterior":35,"anio_actual":47}];
+  var MES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  var UMBRAL = 25;
+  var ACC = '#2563eb';
+  var SERIES = ['#2563eb', '#d97706', '#059669', '#7c3aed', '#db2777'];
+  var fmtI = d3.format(','), fmt1 = d3.format('.1f'), fmt0 = d3.format('.0f');
+  var sgn = function (v) { return (v >= 0 ? '+' : '−') + fmt0(Math.abs(v)) + '%'; };
+  var $ = function (id) { return document.getElementById(id); };
+
+  var av = LOTES.filter(function (r) { return r.decision === 'Avanzó'; });
+  var resumen = { evaluados: LOTES.length, descartados: LOTES.length - av.length, avanzaron: av.length,
+    margen: av.reduce(function (s, r) { return s + r.margen_pct; }, 0) / (av.length || 1) };
+  var emb = EMB.map(function (r, i) {
+    var p = EMB[i - 1];
+    return { etapa: r.etapa, orden: r.orden, previo: r.anio_anterior, actual: r.anio_actual,
+      varPct: (r.anio_actual / r.anio_anterior - 1) * 100,
+      convPrev: p ? r.anio_anterior / p.anio_anterior * 100 : null,
+      convAct: p ? r.anio_actual / p.anio_actual * 100 : null };
+  });
+  $('t-eval').textContent = fmt0(resumen.evaluados);
+  $('t-desc').textContent = fmt0(resumen.descartados);
+  $('t-av').textContent = fmt0(resumen.avanzaron);
+  $('k-mar').textContent = fmt1(resumen.margen) + '%';
+  $('umbral').textContent = UMBRAL + '%';
+  $('f-vis').textContent = sgn(emb.filter(function (r) { return r.etapa === 'Visitas'; })[0].varPct);
+  $('f-con').textContent = sgn(emb.filter(function (r) { return r.etapa === 'Consultas'; })[0].varPct);
+
+  function showTip(host, lines, ev) {
+    var t = host.querySelector(':scope > .tip');
+    if (!t) { t = document.createElement('div'); t.className = 'tip'; host.appendChild(t); }
+    t.replaceChildren();
+    lines.forEach(function (ln, i) {
+      var d = document.createElement('div');
+      if (ln[0]) { var s = document.createElement('i'); s.className = 'sw'; s.style.background = ln[0]; d.appendChild(s); }
+      var sp = document.createElement('span'); sp.textContent = ln[1]; if (i === 0) sp.className = 'tip-h'; d.appendChild(sp); t.appendChild(d);
+    });
+    t.hidden = false;
+    var b = host.getBoundingClientRect();
+    var x = ev.clientX - b.left + 12, y = ev.clientY - b.top + 12;
+    if (x + t.offsetWidth > b.width) x = ev.clientX - b.left - t.offsetWidth - 12;
+    if (x < 0) x = 0;
+    if (y + t.offsetHeight > b.height) y = ev.clientY - b.top - t.offsetHeight - 12;
+    if (y < 0) y = 0;
+    t.style.left = x + 'px'; t.style.top = y + 'px';
+  }
+  function hideTip(host) { var t = host.querySelector(':scope > .tip'); if (t) t.hidden = true; }
+
+  function drawLotes(el) {
+    var rows = LOTES.slice().sort(function (a, b) { return b.margen_pct - a.margen_pct; });
+    var W = Math.max(el.clientWidth, 280), RH = 22, MT = 22, MB = 22, H = MT + rows.length * RH + MB;
+    var svg = d3.create('svg').attr('width', '100%').attr('viewBox', '0 0 ' + W + ' ' + H);
+    el.replaceChildren(svg.node());
+    var probe = svg.append('text'), ml = 0;
+    rows.forEach(function (r) { probe.text(r.lote + ' · ' + r.barrio); ml = Math.max(ml, probe.node().getComputedTextLength()); });
+    probe.remove(); ml = Math.ceil(ml) + 10;
+    var mr = 48;
+    var x = d3.scaleLinear([0, Math.max(40, d3.max(rows, function (r) { return r.margen_pct; }) + 4)], [ml, W - mr]);
+    x.ticks(W < 460 ? 2 : 5).forEach(function (t) {
+      svg.append('line').attr('x1', x(t)).attr('x2', x(t)).attr('y1', MT).attr('y2', H - MB).style('stroke', '#e2e8f0');
+      svg.append('text').attr('x', x(t)).attr('y', H - 6).attr('text-anchor', 'middle').text(t + '%');
+    });
+    svg.append('line').attr('x1', x(UMBRAL)).attr('x2', x(UMBRAL)).attr('y1', MT - 4).attr('y2', H - MB)
+      .style('stroke', '#64748b').attr('stroke-width', 1.5).attr('stroke-dasharray', '4 3');
+    svg.append('text').attr('x', x(UMBRAL)).attr('y', 12).attr('text-anchor', 'middle').text('umbral ' + UMBRAL + '%');
+    rows.forEach(function (r, i) {
+      var y0 = MT + i * RH, win = r.decision === 'Avanzó';
+      svg.append('text').attr('x', ml - 8).attr('y', y0 + RH / 2 + 4).attr('text-anchor', 'end').attr('class', win ? 'strong' : null).text(r.lote + ' · ' + r.barrio);
+      svg.append('rect').attr('x', ml).attr('y', y0 + 4).attr('width', Math.max(0, x(r.margen_pct) - ml)).attr('height', RH - 8).attr('rx', 2).style('fill', win ? ACC : '#cbd5e1');
+      svg.append('text').attr('x', x(r.margen_pct) + 6).attr('y', y0 + RH / 2 + 4).text(fmt1(r.margen_pct) + '%');
+      svg.append('rect').attr('x', 0).attr('y', y0).attr('width', W).attr('height', RH).style('fill', 'transparent')
+        .on('pointermove', function (ev) { showTip(el, [[null, r.lote + ' · ' + r.barrio], [null, 'Margen: ' + fmt1(r.margen_pct) + '%'],
+          [null, 'Venta: USD ' + fmtI(r.usd_m2_venta) + '/m² · Costo: USD ' + fmtI(r.usd_m2_costo) + '/m²'],
+          [null, 'Decisión: ' + r.decision + (win ? '' : ' (' + r.motivo + ')')]], ev); })
+        .on('pointerleave', function () { hideTip(el); });
+    });
+  }
+
+  function drawBench(el) {
+    var data = BENCH.map(function (r) { return { p: r.proyecto, t: new Date(r.mes + '-01T00:00:00Z'), v: r.usd_m2 }; });
+    var groups = d3.group(data, function (r) { return r.p; }), names = Array.from(groups.keys());
+    var col = function (n) { return SERIES[names.indexOf(n) % SERIES.length]; };
+    var W = Math.max(el.clientWidth, 280), H = 300, MT = 12, MB = 28, ml = 46;
+    var narrow = W < 460;
+    var endText = function (n, v) { return narrow ? n.replace(' (simulado)', '') : n + ' ' + fmtI(v); };
+    var svg = d3.create('svg').attr('width', '100%').attr('viewBox', '0 0 ' + W + ' ' + H);
+    el.replaceChildren(svg.node());
+    var probe = svg.append('text'), mr = 0;
+    names.forEach(function (n) { var a = groups.get(n), l = a[a.length - 1]; probe.text(endText(n, l.v)); mr = Math.max(mr, probe.node().getComputedTextLength()); });
+    probe.remove(); mr = Math.ceil(mr) + 14;
+    var lo = Math.floor(d3.min(data, function (r) { return r.v; }) / 100) * 100 - 100;
+    var hi = Math.ceil(d3.max(data, function (r) { return r.v; }) / 100) * 100 + 100;
+    var x = d3.scaleUtc([d3.min(data, function (r) { return r.t; }), d3.max(data, function (r) { return r.t; })], [ml, W - mr]);
+    var y = d3.scaleLinear([lo, hi], [H - MB, MT]);
+    y.ticks(5).forEach(function (t) {
+      svg.append('line').attr('x1', ml).attr('x2', W - mr).attr('y1', y(t)).attr('y2', y(t)).style('stroke', '#e2e8f0');
+      svg.append('text').attr('x', ml - 6).attr('y', y(t) + 4).attr('text-anchor', 'end').text(fmtI(t));
+    });
+    x.ticks(d3.utcMonth.every((W - mr - ml) < 340 ? 4 : 2)).forEach(function (t) {
+      svg.append('text').attr('x', x(t)).attr('y', H - 8).attr('text-anchor', 'middle').text(MES[t.getUTCMonth()] + ' ' + String(t.getUTCFullYear()).slice(2));
+    });
+    var line = d3.line().x(function (r) { return x(r.t); }).y(function (r) { return y(r.v); });
+    names.forEach(function (n, i) {
+      svg.append('path').attr('d', line(groups.get(n))).attr('fill', 'none').style('stroke', col(n)).attr('stroke-width', i === 0 ? 3 : 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+    });
+    var ends = names.map(function (n) { var a = groups.get(n), l = a[a.length - 1]; return { n: n, y: y(l.v), v: l.v }; }).sort(function (a, b) { return a.y - b.y; });
+    for (var i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 14) ends[i].y = ends[i - 1].y + 14;
+    ends.forEach(function (e) {
+      svg.append('text').attr('x', W - mr + 8).attr('y', e.y + 4).style('fill', col(e.n)).attr('class', e.n === names[0] ? 'strong' : null).text(endText(e.n, e.v));
+    });
+    var rule = svg.append('line').attr('y1', MT).attr('y2', H - MB).style('stroke', '#64748b').style('display', 'none');
+    var times = Array.from(new Set(data.map(function (r) { return +r.t; }))).sort(function (a, b) { return a - b; });
+    svg.append('rect').attr('x', ml).attr('y', MT).attr('width', W - mr - ml).attr('height', H - MB - MT).style('fill', 'transparent')
+      .on('pointermove', function (ev) {
+        var b = el.getBoundingClientRect(), t = x.invert(ev.clientX - b.left);
+        var k = times.reduce(function (m, c) { return Math.abs(c - t) < Math.abs(m - t) ? c : m; }, times[0]);
+        rule.attr('x1', x(new Date(k))).attr('x2', x(new Date(k))).style('display', null);
+        var dt = new Date(k);
+        var vals = names.map(function (n) { return { n: n, v: groups.get(n).filter(function (r) { return +r.t === k; })[0].v }; }).sort(function (a, b) { return b.v - a.v; });
+        showTip(el, [[null, MES[dt.getUTCMonth()] + ' ' + dt.getUTCFullYear()]].concat(vals.map(function (s) { return [col(s.n), s.n + ': USD ' + fmtI(s.v) + '/m²']; })), ev);
+      })
+      .on('pointerleave', function () { rule.style('display', 'none'); hideTip(el); });
+  }
+
+  function drawFunnel(el) {
+    var rows = emb.slice().sort(function (a, b) { return a.orden - b.orden; });
+    var W = Math.max(el.clientWidth, 280), SH = 70, MT = 4;
+    var svg = d3.create('svg').attr('width', '100%').attr('viewBox', '0 0 ' + W + ' ' + (MT + rows.length * SH));
+    el.replaceChildren(svg.node());
+    var probe = svg.append('text'), mr = 0;
+    rows.forEach(function (r) { probe.text(fmtI(r.actual) + ' (' + sgn(r.varPct) + ')'); mr = Math.max(mr, probe.node().getComputedTextLength()); });
+    probe.remove(); mr = Math.ceil(mr) + 12;
+    var x = d3.scaleLinear([0, d3.max(rows, function (r) { return Math.max(r.actual, r.previo); })], [0, W - mr]);
+    rows.forEach(function (r, i) {
+      var y0 = MT + i * SH;
+      svg.append('text').attr('x', 0).attr('y', y0 + 12).attr('class', 'strong').text(r.etapa);
+      if (i > 0) svg.append('text').attr('x', 0).attr('y', y0 + 27).text(fmt0(r.convAct) + '% viene de ' + rows[i - 1].etapa.toLowerCase() + ' · año anterior ' + fmt0(r.convPrev) + '%');
+      svg.append('rect').attr('x', 0).attr('y', y0 + 33).attr('width', x(r.actual)).attr('height', 13).attr('rx', 2).style('fill', ACC);
+      svg.append('rect').attr('x', 0).attr('y', y0 + 49).attr('width', x(r.previo)).attr('height', 6).attr('rx', 2).style('fill', '#cbd5e1');
+      svg.append('text').attr('x', x(r.actual) + 6).attr('y', y0 + 44).text(fmtI(r.actual) + ' (' + sgn(r.varPct) + ')');
+    });
+  }
+
+  var charts = [['c-lotes', drawLotes], ['c-bench', drawBench], ['c-funnel', drawFunnel]];
+  charts.forEach(function (c) {
+    var el = $(c[0]), last = 0;
+    function run() { var w = el.clientWidth; if (w && w !== last) { last = w; c[1](el); } }
+    run();
+    if (window.ResizeObserver) new ResizeObserver(run).observe(el); else window.addEventListener('resize', run);
+  });
+})();
+</script>
+</body>
+</html>
